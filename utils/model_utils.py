@@ -35,3 +35,32 @@ def regression_analysis(data, esg, metric):
     # Display regression summary
     print(f"\nRegression Summary for {metric} vs {esg}:")
     print(model.summary())
+
+# utils/model_utils.py
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+def apply_shock(data, metric, shock):
+    """Apply a shock to a financial metric and return the updated data."""
+    shocked_data = data.copy()
+    shocked_data[metric] = shocked_data[metric] * (1 + shock)
+    return shocked_data
+
+def resilience_regression(data, esg, metric, shock):
+    """Perform regression to assess resilience for a given ESG component and financial metric."""
+    shocked_data = apply_shock(data, metric, shock)
+    shocked_data = shocked_data[[esg, metric]].dropna()
+
+    # If no valid data remains, return None to skip this combination
+    if shocked_data.empty:
+        return None, None
+
+    X = shocked_data[[esg]]
+    y = shocked_data[metric]
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    return model.coef_[0], model.intercept_

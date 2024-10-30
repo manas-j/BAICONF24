@@ -46,3 +46,36 @@ def plot_distributions(data, columns):
         plt.title(f'Distribution of {col}', fontsize=12)
     plt.tight_layout()
     plt.show()
+
+# utils/visualization.py
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def plot_shock_visualizations(results_df):
+    """Visualize the regression coefficients and intercepts across shock levels."""
+
+    # Plot regression coefficients
+    plt.figure(figsize=(15, 8))
+    sns.barplot(
+        data=results_df, x='Shock Level', y='Coefficient', hue='ESG Component',
+        ci=None, palette='muted'
+    )
+    plt.title('Regression Coefficients under Different Shock Levels', fontsize=18)
+    plt.xlabel('Shock Level (Percentage Change)', fontsize=14)
+    plt.ylabel('Regression Coefficient', fontsize=14)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.show()
+
+    # Plot intercepts
+    plt.figure(figsize=(15, 8))
+    sns.lineplot(
+        data=results_df, x='Shock Level', y='Intercept', hue='ESG Component',
+        style='Financial Metric', markers=True
+    )
+    plt.title('Intercepts for ESG Components and Financial Metrics under Stress', fontsize=18)
+    plt.xlabel('Shock Level (Percentage Change)', fontsize=14)
+    plt.ylabel('Intercept', fontsize=14)
+    plt.grid(True)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.show()
