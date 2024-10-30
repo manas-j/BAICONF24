@@ -1,16 +1,21 @@
 # configs/esg_resilience_analysis_config.yaml
 
-file_path: '/path/to/600_data.csv'
+file_path: '../data/esg_financial_data.csv'
 esg_columns:
-  - Environment Score
-  - Social Score
-  - Governance Score
-  - ESG Rating
+  - 'Environment Score'
+  - 'Social Score'
+  - 'Governance Score'
+  - 'ESG Rating'
 financial_columns:
-  - P/E 
-  - P/B 
-  - EPS 
-  - Total income
-  - Total assets
-  - Market Capitalisation / Enterprise Value
-shock_levels: [-0.10, -0.20, -0.30, 0.10, 0.20]
+  - 'P/E '
+  - 'P/B '
+  - 'EPS '
+  - 'Total income'
+  - 'Total assets'
+  - 'Market Capitalisation / Enterprise Value'
+shock_levels:
+  - -0.10
+  - -0.20
+  - -0.30
+  - 0.10
+  - 0.20

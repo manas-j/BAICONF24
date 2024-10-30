@@ -96,3 +96,56 @@ def calculate_elasticity(data, esg, metric):
 
     elasticity = model.coef_[0]  # Elasticity is the coefficient of log-log model
     return elasticity
+
+# utils/model_utils.py
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+def apply_shock(data, metric, shock):
+    """Apply a shock to a financial metric and return the updated data."""
+    shocked_data = data.copy()
+    shocked_data[metric] = shocked_data[metric] * (1 + shock)
+    return shocked_data
+
+def resilience_regression(data, esg, metric, shock):
+    """Perform regression to assess resilience for a given ESG component and financial metric."""
+    shocked_data = apply_shock(data, metric, shock)
+
+    shocked_data = shocked_data[[esg, metric]].dropna()
+    if shocked_data.empty:
+        return None, None
+
+    X = shocked_data[[esg]]
+    y = shocked_data[metric]
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    coefficient = model.coef_[0]
+    intercept = model.intercept_
+
+    return coefficient, intercept
+
+def calculate_elasticity(data, esg, metric):
+    """Calculate the elasticity of financial metric with respect to ESG score."""
+    if metric not in data.columns:
+        print(f"Warning: {metric} is not in DataFrame columns.")
+        return None
+
+    data_filtered = data[[esg, metric]].dropna()
+    if data_filtered.empty:
+        print(f"Skipping {esg} vs {metric} due to insufficient data.")
+        return None
+
+    data_filtered[esg] = np.log(data_filtered[esg] + 1)
+    data_filtered[metric] = np.log(data_filtered[metric] + 1)
+
+    X = data_filtered[[esg]]
+    y = data_filtered[metric]
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    elasticity = model.coef_[0]
+    return elasticity

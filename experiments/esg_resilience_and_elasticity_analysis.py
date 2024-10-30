@@ -5,8 +5,8 @@ import yaml
 import seaborn as sns
 import matplotlib.pyplot as plt
 from utils.data_processing import load_and_process_data
-from utils.model_utils import resilience_regression, calculate_elasticity
-from utils.visualization import plot_shock_visualizations, plot_elasticity_results
+from utils.model_utils import resilience_regression, calculate_elasticity, apply_shock
+from utils.visualization import plot_shock_visualizations, plot_elasticity_results, plot_resilience_results
 
 def main():
     # Load configuration
@@ -19,28 +19,30 @@ def main():
     financial_columns = config['financial_columns']
     shock_levels = config['shock_levels']
 
-    # Step 1: Resilience Analysis
-    resilience_results = []
+    # Step 1: Perform Resilience Regression
+    results = []
     for esg in esg_columns:
         for metric in financial_columns:
             for shock in shock_levels:
-                coef, intercept = resilience_regression(data, esg, metric, shock)
-                
-                # Skip if regression couldn't be performed
-                if coef is None or intercept is None:
-                    print(f"Skipping {esg} vs {metric} under {shock*100}% shock (insufficient data).")
-                    continue
-                
-                resilience_results.append({
-                    'ESG Component': esg,
-                    'Financial Metric': metric,
-                    'Shock Level': shock,
-                    'Coefficient': coef,
-                    'Intercept': intercept
-                })
+                try:
+                    coef, intercept = resilience_regression(data, esg, metric, shock)
 
-    # Convert resilience results to DataFrame for analysis and visualization
-    resilience_df = pd.DataFrame(resilience_results)
+                    if coef is None or intercept is None:
+                        print(f"Skipping {esg} vs {metric} under {shock*100}% shock (insufficient data).")
+                        continue
+
+                    results.append({
+                        'ESG Component': esg,
+                        'Financial Metric': metric,
+                        'Shock Level': shock,
+                        'Coefficient': coef,
+                        'Intercept': intercept
+                    })
+                except Exception as e:
+                    print(f"Error in {esg} vs {metric} with {shock*100}% shock: {str(e)}")
+
+    # Convert results to DataFrame for analysis
+    results_df = pd.DataFrame(results)
 
     # Step 2: Elasticity Analysis
     elasticity_results = []
@@ -54,12 +56,13 @@ def main():
                     'Elasticity': elasticity
                 })
 
-    # Convert elasticity results to DataFrame for analysis and visualization
+    # Convert elasticity results to DataFrame for analysis
     elasticity_df = pd.DataFrame(elasticity_results)
 
-    # Visualize resilience regression and elasticity results
-    plot_shock_visualizations(resilience_df)
+    # Visualize results
+    plot_shock_visualizations(results_df)
     plot_elasticity_results(elasticity_df)
+    plot_resilience_results(results_df)
 
 if __name__ == "__main__":
     main()
