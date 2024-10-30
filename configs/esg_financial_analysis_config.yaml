@@ -1,0 +1,25 @@
+# configs/esg_financial_analysis_config.yaml
+
+file_path: '/content/drive/MyDrive/financial_data.csv'
+esg_columns:
+  - Environment
+  - Social
+  - Governance
+  - Overall
+financial_columns:
+  - Debt to Equity
+  - P/E Ratio
+  - P/B Ratio
+  - EPS
+  - Revenue Growth
+  - Gross Profit Margin
+  - Total Revenue
+selected_columns:
+  - Environment
+  - Social
+  - Governance
+  - Overall
+  - Debt to Equity
+  - P/E Ratio
+  - P/B Ratio
+  - EPS
