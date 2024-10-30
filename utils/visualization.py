@@ -79,3 +79,30 @@ def plot_shock_visualizations(results_df):
     plt.grid(True)
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.show()
+
+# utils/visualization.py
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Existing plot_shock_visualizations function goes here
+
+def plot_elasticity_results(elasticity_df):
+    """Visualize the elasticity of financial metrics with respect to ESG components."""
+    plt.figure(figsize=(15, 8))
+    sns.barplot(
+        data=elasticity_df, x='Elasticity', y='Financial Metric', hue='ESG Component',
+        palette='muted', ci=None
+    )
+    plt.title('Elasticity of Financial Metrics with Respect to ESG Components', fontsize=18)
+    plt.xlabel('Elasticity Coefficient', fontsize=14)
+    plt.ylabel('Financial Metric', fontsize=14)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.show()
+
+    print("\nSummary of Elasticity Analysis:")
+    for index, row in elasticity_df.iterrows():
+        esg = row['ESG Component']
+        metric = row['Financial Metric']
+        elasticity = row['Elasticity']
+        print(f"- {metric} is {elasticity:.4f} times sensitive to changes in {esg}.")

@@ -64,3 +64,35 @@ def resilience_regression(data, esg, metric, shock):
     model.fit(X, y)
 
     return model.coef_[0], model.intercept_
+
+# utils/model_utils.py
+
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# Existing resilience_regression and apply_shock functions go here
+
+def calculate_elasticity(data, esg, metric):
+    """Calculate the elasticity of financial metric with respect to ESG score."""
+    if metric not in data.columns:
+        print(f"Warning: {metric} is not in DataFrame columns.")
+        return None
+
+    # Filter out rows with NaN and log-transform data
+    data_filtered = data[[esg, metric]].dropna()
+    if data_filtered.empty:
+        print(f"Skipping {esg} vs {metric} due to insufficient data.")
+        return None
+
+    # Apply log transformation for elasticity calculation
+    data_filtered[esg] = np.log(data_filtered[esg] + 1)  # Avoid log(0)
+    data_filtered[metric] = np.log(data_filtered[metric] + 1)  # Avoid log(0)
+
+    X = data_filtered[[esg]]
+    y = data_filtered[metric]
+
+    model = LinearRegression()
+    model.fit(X, y)
+
+    elasticity = model.coef_[0]  # Elasticity is the coefficient of log-log model
+    return elasticity
